@@ -1,0 +1,45 @@
+/* Matches the settings row-group styling in design/Pressure Log.dc.html
+   (~line 166): uppercase muted group label, rounded surface card, rows
+   divided by a hairline, last row undivided. */
+.settings-group-label {
+  margin-bottom: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text);
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-bottom: 1px solid var(--color-divider);
+  background: none;
+  font: inherit;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-row-title {
+  flex: 1;
+  font-size: 14.5px;
+  font-weight: 600;
+}

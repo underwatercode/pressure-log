@@ -1,0 +1,11 @@
+.app-shell {
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.app-content {
+  /* Clears the fixed bottom tab bar (see TabBar.css) plus a little
+     breathing room, so the last bit of content is never hidden under it. */
+  padding-bottom: calc(98px + env(safe-area-inset-bottom, 0px) + var(--space-4));
+}

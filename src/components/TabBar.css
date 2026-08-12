@@ -1,0 +1,39 @@
+/* Matches design/Pressure Log.dc.html's bottom nav (~line 188): same
+   height, blur, spacing, and border. `env(safe-area-inset-bottom)` is
+   added on top for real iOS devices, which the design's fixed-size canvas
+   didn't need to account for. */
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-top: 12px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(98px + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--color-divider);
+  z-index: 55;
+}
+
+.tab-bar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 64px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.tab-bar-btn span {
+  font-size: 11px;
+  font-weight: 700;
+}

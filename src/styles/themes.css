@@ -1,0 +1,66 @@
+/* Meadow and Night — token overrides on top of the Warm defaults in
+   tokens.css. Warm needs no block of its own: it *is* the base :root.
+   Applied via a `data-theme` attribute on <html>, set by ThemeContext. */
+
+/* — Meadow: same structure as Warm, greens dominant. Derived straight from
+   the accent-2 ramp already in tokens.css — accent and accent-2 swap
+   places rather than inventing new colors. — */
+:root[data-theme='meadow'] {
+  --color-bg: #eef2e0;
+  --color-surface: #e2ead0;
+  --color-text: #1f2318;
+  --color-accent: #7a8a5e;
+  --color-accent-2: #c67139;
+  --color-divider: color-mix(in srgb, #1f2318 16%, transparent);
+
+  --color-accent-100: #f0fae1;
+  --color-accent-200: #e1eecc;
+  --color-accent-300: #ccdbb2;
+  --color-accent-400: #aebf92;
+  --color-accent-500: #8fa073;
+  --color-accent-600: #728157;
+  --color-accent-700: #56633f;
+  --color-accent-800: #3d472b;
+  --color-accent-900: #272e1b;
+
+  --color-accent-2-100: #fff2eb;
+  --color-accent-2-200: #ffe1d0;
+  --color-accent-2-300: #ffc6a5;
+  --color-accent-2-400: #f6a06b;
+  --color-accent-2-500: #d67f48;
+  --color-accent-2-600: #b2622d;
+  --color-accent-2-700: #8c491a;
+  --color-accent-2-800: #643312;
+  --color-accent-2-900: #402310;
+}
+
+/* — Night: dark, low-contrast background, tuned for evening logging.
+   Text keeps AA contrast against both --color-bg and --color-surface.
+   The neutral ramp is inverted (100 = near-bg, 900 = near-text) so a
+   token like --color-neutral-700, used for muted-but-readable text,
+   still reads as a light, legible tone against a dark background instead
+   of vanishing into it. Shadows switch from the light theme's soft
+   ink-tinted blur to a hairline edge + ambient darkness, per the
+   elevation model in tokens.css. — */
+:root[data-theme='night'] {
+  --color-bg: #1c1a17;
+  --color-surface: #26231e;
+  --color-text: #f2ece2;
+  --color-accent: #e2996a;
+  --color-accent-2: #a3b587;
+  --color-divider: color-mix(in srgb, #f2ece2 16%, transparent);
+
+  --color-neutral-100: #211f1b;
+  --color-neutral-200: #2b2823;
+  --color-neutral-300: #38342c;
+  --color-neutral-400: #4c473c;
+  --color-neutral-500: #7d7462;
+  --color-neutral-600: #968c78;
+  --color-neutral-700: #aca290;
+  --color-neutral-800: #d3c9b5;
+  --color-neutral-900: #f5efe3;
+
+  --shadow-sm: 0 0 0 1px color-mix(in srgb, #f2ece2 8%, transparent), 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 0 0 1px color-mix(in srgb, #f2ece2 8%, transparent), 0 4px 14px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 0 0 1px color-mix(in srgb, #f2ece2 10%, transparent), 0 14px 36px rgba(0, 0, 0, 0.6);
+}

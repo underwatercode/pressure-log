@@ -1,0 +1,14 @@
+.screen {
+  padding: max(20px, calc(env(safe-area-inset-top, 0px) + 12px)) 20px 8px;
+}
+
+.screen-title {
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+
+.screen-note {
+  margin: 0;
+  max-width: 42ch;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
