@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="./organic-styles.css">
+<style>
+  body{margin:0}
+  @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--color-neutral-300);padding:48px;box-sizing:border-box">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402,874">
+<div style="height:100%;position:relative;background:var(--color-bg);overflow:hidden;font-family:var(--font-body)">
+
+  <div style="height:100%;overflow:auto;box-sizing:border-box;padding-bottom:130px">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:58px 20px 8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+        <div>
+          <div style="font-size:14px;color:var(--color-neutral-700)">{{ greeting }}</div>
+          <div style="font-family:var(--font-heading);font-size:26px;color:var(--color-text);margin-top:3px">{{ todayLabel }}</div>
+        </div>
+        <button onClick="{{ goSettings }}" style="width:40px;height:40px;border-radius:50%;border:none;background:var(--color-surface);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);color:var(--color-neutral-700)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/></svg>
+        </button>
+      </div>
+
+      <div style="border-radius:32px;padding:24px;background:{{ bpStatus.bg }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <span style="font-size:11px;font-weight:700;color:var(--color-text);text-transform:uppercase;letter-spacing:0.08em;opacity:0.65">Today's Reading</span>
+          <span style="font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,0.55);color:{{ bpStatus.color }}">{{ bpStatus.label }}</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-family:var(--font-heading);font-size:48px;color:var(--color-text);font-variant-numeric:tabular-nums">{{ latestReading.valueText }}</span>
+          <span style="font-size:14px;color:var(--color-text);opacity:0.65;font-weight:600">mmHg</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:10px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2 6 4-12 2 6h7"/></svg>
+            <span style="font-size:13.5px;color:var(--color-text);opacity:0.75">Pulse {{ latestReading.pulse }} bpm</span>
+          </div>
+          <span style="font-size:12.5px;color:var(--color-text);opacity:0.5">{{ latestReading.time }}</span>
+        </div>
+      </div>
+
+      <div style="margin-top:24px">
+        <div style="font-family:var(--font-heading);font-size:17px;color:var(--color-text);margin-bottom:10px">Feeling stressed? Log it</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ quickTags }}" as="qt" hint-placeholder-count="6">
+            <button onClick="{{ qt.onClick }}" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--color-divider);background:var(--color-surface);font-size:13.5px;color:var(--color-text);font-weight:600">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--color-accent-2-700)" stroke="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+              {{ qt.label }}
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="margin-top:26px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+          <span style="font-family:var(--font-heading);font-size:17px;color:var(--color-text)">Recent</span>
+          <button onClick="{{ goLog }}" style="border:none;background:none;font-size:13.5px;color:var(--color-accent-700);font-weight:700;padding:0;cursor:pointer">See all</button>
+        </div>
+        <div style="display:flex;flex-direction:column;background:var(--color-surface);border-radius:24px;overflow:hidden">
+          <sc-for list="{{ recentEntries }}" as="row" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--color-divider)">
+              <div style="width:38px;height:38px;border-radius:13px;background:{{ row.iconBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <sc-if value="{{ row.isReading }}" hint-placeholder-val="{{ true }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ row.iconColor }}" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2 6 4-12 2 6h7"/></svg></sc-if>
+                <sc-if value="{{ row.isStress }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="{{ row.iconColor }}" stroke="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></sc-if>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:700;color:var(--color-text)">{{ row.title }}</div>
+                <div style="font-size:12.5px;color:var(--color-text);opacity:0.6;margin-top:1px">{{ row.subtitle }}</div>
+              </div>
+              <div style="text-align:right;flex-shrink:0">
+                <div style="font-size:14.5px;font-weight:700;color:{{ row.valueColor }};font-variant-numeric:tabular-nums">{{ row.valueText }}</div>
+                <div style="font-size:11.5px;color:var(--color-text);opacity:0.45;margin-top:1px">{{ row.time }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isLog }}">
+    <div style="padding:58px 20px 8px">
+      <div style="font-family:var(--font-heading);font-size:26px;color:var(--color-text);margin-bottom:16px">Log</div>
+      <div style="display:flex;gap:4px;background:var(--color-surface);border-radius:999px;padding:4px;margin-bottom:22px">
+        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="3">
+          <button onClick="{{ f.onClick }}" style="flex:1;border:none;padding:8px 0;border-radius:999px;background:{{ f.bg }};color:{{ f.color }};font-size:13.5px;font-weight:700;cursor:pointer">{{ f.label }}</button>
+        </sc-for>
+      </div>
+      <sc-for list="{{ logGroups }}" as="grp" hint-placeholder-count="4">
+        <div style="margin-bottom:20px">
+          <div style="font-size:12px;font-weight:700;color:var(--color-text);opacity:0.5;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:9px">{{ grp.label }}</div>
+          <div style="display:flex;flex-direction:column;background:var(--color-surface);border-radius:24px;overflow:hidden">
+            <sc-for list="{{ grp.items }}" as="row" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--color-divider)">
+                <div style="width:38px;height:38px;border-radius:13px;background:{{ row.iconBg }};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <sc-if value="{{ row.isReading }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ row.iconColor }}" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2 6 4-12 2 6h7"/></svg></sc-if>
+                  <sc-if value="{{ row.isStress }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="{{ row.iconColor }}" stroke="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></sc-if>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:14.5px;font-weight:700;color:var(--color-text)">{{ row.title }}</div>
+                  <div style="font-size:12.5px;color:var(--color-text);opacity:0.6;margin-top:1px">{{ row.subtitle }}</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0">
+                  <div style="font-size:14.5px;font-weight:700;color:{{ row.valueColor }};font-variant-numeric:tabular-nums">{{ row.valueText }}</div>
+                  <div style="font-size:11.5px;color:var(--color-text);opacity:0.45;margin-top:1px">{{ row.time }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isTrends }}">
+    <div style="padding:58px 20px 8px">
+      <div style="font-family:var(--font-heading);font-size:26px;color:var(--color-text);margin-bottom:16px">Trends</div>
+      <div style="display:flex;gap:6px;margin-bottom:18px">
+        <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="2">
+          <button onClick="{{ r.onClick }}" style="border:none;padding:7px 16px;border-radius:999px;background:{{ r.bg }};color:{{ r.color }};font-size:13px;font-weight:700;cursor:pointer">{{ r.label }}</button>
+        </sc-for>
+      </div>
+      <div style="background:var(--color-surface);border-radius:26px;padding:20px 16px;box-shadow:var(--shadow-sm)">
+        <svg width="100%" height="140" viewBox="0 0 300 120" preserveAspectRatio="none">
+          <path d="{{ chart.sysPath }}" fill="none" stroke="var(--color-accent-600)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="{{ chart.diaPath }}" fill="none" stroke="var(--color-accent-600)" stroke-opacity="0.4" stroke-width="2.2" stroke-dasharray="4 3" stroke-linecap="round"/>
+          <sc-for list="{{ chart.dots }}" as="dot" hint-placeholder-count="14">
+            <circle cx="{{ dot.x }}" cy="112" r="{{ dot.r }}" fill="var(--color-accent-2-600)" fill-opacity="{{ dot.op }}"/>
+          </sc-for>
+        </svg>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--color-text);opacity:0.5;margin-top:2px">
+          <span>{{ chart.startLabel }}</span>
+          <span>Today</span>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:16px;padding-top:14px;border-top:1px solid var(--color-divider)">
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:3px;border-radius:2px;background:var(--color-accent-600)"></div><span style="font-size:12px;color:var(--color-text);opacity:0.7">Systolic</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:3px;border-radius:2px;background:var(--color-accent-600);opacity:0.4"></div><span style="font-size:12px;color:var(--color-text);opacity:0.7">Diastolic</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><svg width="9" height="9" viewBox="0 0 9 9"><circle cx="4.5" cy="4.5" r="4.5" fill="var(--color-accent-2-600)"/></svg><span style="font-size:12px;color:var(--color-text);opacity:0.7">Stress</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;background:var(--color-accent-2-100);border-radius:24px;padding:20px">
+        <div style="font-size:11px;font-weight:700;color:var(--color-accent-2-800);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:7px">Insight</div>
+        <div style="font-size:14.5px;line-height:1.55;color:var(--color-text)">{{ insightText }}</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isSettings }}">
+    <div style="padding:58px 20px 8px">
+      <div style="font-family:var(--font-heading);font-size:26px;color:var(--color-text);margin-bottom:18px">Settings</div>
+      <sc-for list="{{ settingsGroups }}" as="grp" hint-placeholder-count="3">
+        <div style="margin-bottom:20px">
+          <div style="font-size:12px;font-weight:700;color:var(--color-text);opacity:0.5;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:9px">{{ grp.label }}</div>
+          <div style="display:flex;flex-direction:column;background:var(--color-surface);border-radius:24px;overflow:hidden">
+            <sc-for list="{{ grp.items }}" as="row" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--color-divider)">
+                <div style="flex:1;font-size:14.5px;font-weight:600;color:var(--color-text)">{{ row.title }}</div>
+                <sc-if value="{{ row.detail }}"><span style="font-size:13.5px;color:var(--color-text);opacity:0.55">{{ row.detail }}</span></sc-if>
+                <sc-if value="{{ row.chevron }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-opacity="0.35" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ fabVisible }}" hint-placeholder-val="{{ true }}">
+  <button onClick="{{ openChoose }}" style="position:absolute;right:20px;bottom:116px;width:58px;height:58px;border-radius:50%;border:none;background:var(--color-accent);box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg)" stroke-width="2.75" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+  </sc-if>
+
+  <div style="position:absolute;left:0;right:0;bottom:0;height:98px;display:flex;align-items:flex-start;justify-content:space-around;padding-top:12px;background:color-mix(in srgb, var(--color-bg) 88%, transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--color-divider);z-index:55">
+    <button onClick="{{ goHome }}" style="display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;width:64px;cursor:pointer;color:{{ tabColors.home }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/></svg>
+      <span style="font-size:11px;font-weight:700">Home</span>
+    </button>
+    <button onClick="{{ goLog }}" style="display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;width:64px;cursor:pointer;color:{{ tabColors.log }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      <span style="font-size:11px;font-weight:700">Log</span>
+    </button>
+    <button onClick="{{ goTrends }}" style="display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;width:64px;cursor:pointer;color:{{ tabColors.trends }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l4-4 4 5 4-8 6 6"/></svg>
+      <span style="font-size:11px;font-weight:700">Trends</span>
+    </button>
+    <button onClick="{{ goSettings }}" style="display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;width:64px;cursor:pointer;color:{{ tabColors.settings }}">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/></svg>
+      <span style="font-size:11px;font-weight:700">Settings</span>
+    </button>
+  </div>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:absolute;left:50%;bottom:112px;transform:translateX(-50%);background:var(--color-text);color:var(--color-bg);padding:10px 20px;border-radius:999px;font-size:13.5px;font-weight:600;z-index:90;animation:fadeIn .25s ease-out;white-space:nowrap">{{ toast }}</div>
+  </sc-if>
+
+  <sc-if value="{{ sheet }}">
+  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:color-mix(in srgb, var(--color-neutral-900) 50%, transparent);z-index:70;display:flex;align-items:flex-end">
+    <div onClick="{{ stopClick }}" style="width:100%;background:var(--color-bg);border-radius:32px 32px 0 0;padding:18px 20px 36px;box-sizing:border-box;animation:sheetUp .28s cubic-bezier(.2,.8,.2,1);max-height:88%;overflow:auto">
+
+      <sc-if value="{{ isChoose }}" hint-placeholder-val="{{ true }}">
+        <div style="width:36px;height:4px;background:var(--color-divider);border-radius:999px;margin:0 auto 18px"></div>
+        <div style="font-family:var(--font-heading);font-size:20px;color:var(--color-text);margin-bottom:16px">Add Entry</div>
+        <button onClick="{{ chooseReading }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:14px;border-radius:22px;border:1px solid var(--color-divider);background:var(--color-surface);margin-bottom:10px;text-align:left;cursor:pointer">
+          <div style="width:44px;height:44px;border-radius:16px;background:var(--color-accent-100);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2 6 4-12 2 6h7"/></svg></div>
+          <div style="flex:1"><div style="font-size:15px;font-weight:700;color:var(--color-text)">Blood Pressure Reading</div><div style="font-size:12.5px;color:var(--color-text);opacity:0.6;margin-top:1px">Systolic, diastolic &amp; pulse</div></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-opacity="0.3" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button onClick="{{ chooseStress }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:14px;border-radius:22px;border:1px solid var(--color-divider);background:var(--color-surface);text-align:left;cursor:pointer">
+          <div style="width:44px;height:44px;border-radius:16px;background:var(--color-accent-2-100);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-accent-2-700)" stroke="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
+          <div style="flex:1"><div style="font-size:15px;font-weight:700;color:var(--color-text)">Stress Event</div><div style="font-size:12.5px;color:var(--color-text);opacity:0.6;margin-top:1px">What's affecting you today?</div></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-opacity="0.3" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </sc-if>
+
+      <sc-if value="{{ isReadingForm }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <div style="font-family:var(--font-heading);font-size:20px;color:var(--color-text)">Log Blood Pressure</div>
+          <button onClick="{{ closeSheet }}" style="width:32px;height:32px;border-radius:50%;background:var(--color-surface);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-width="2.75" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          </button>
+        </div>
+        <sc-for list="{{ readingFields }}" as="fld" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--color-divider)">
+            <div style="font-size:15px;font-weight:700;color:var(--color-text)">{{ fld.label }}</div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <button onClick="{{ fld.dec }}" style="width:34px;height:34px;border-radius:50%;background:var(--color-surface);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-width="2.75" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <div style="min-width:46px;text-align:center;font-family:var(--font-heading);font-size:19px;font-variant-numeric:tabular-nums;color:var(--color-text)">{{ fld.value }}</div>
+              <button onClick="{{ fld.inc }}" style="width:34px;height:34px;border-radius:50%;background:var(--color-surface);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-width="2.75" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <span style="font-size:12px;color:var(--color-text);opacity:0.5;width:34px">{{ fld.unit }}</span>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ readingWarning }}">
+          <div style="font-size:12.5px;color:var(--color-accent-800);margin-top:10px">{{ readingWarning }}</div>
+        </sc-if>
+        <button onClick="{{ saveReading }}" style="width:100%;margin-top:18px;padding:15px;border-radius:999px;border:none;background:var(--color-accent);opacity:{{ readingValid }};color:var(--color-bg);font-family:var(--font-heading);font-size:15.5px;cursor:pointer">Save Reading</button>
+      </sc-if>
+
+      <sc-if value="{{ isStressForm }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-family:var(--font-heading);font-size:20px;color:var(--color-text)">Log Stress Event</div>
+          <button onClick="{{ closeSheet }}" style="width:32px;height:32px;border-radius:50%;background:var(--color-surface);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-width="2.75" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          </button>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--color-text);opacity:0.5;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:9px">What's going on</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">
+          <sc-for list="{{ stressTags }}" as="tg" hint-placeholder-count="8">
+            <button onClick="{{ tg.onClick }}" style="padding:9px 15px;border-radius:999px;border:1px solid {{ tg.border }};background:{{ tg.bg }};color:{{ tg.color }};font-size:13.5px;font-weight:700;cursor:pointer">{{ tg.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:700;color:var(--color-text);opacity:0.5;text-transform:uppercase;letter-spacing:0.06em">Intensity</span>
+          <span style="font-size:13px;font-weight:700;color:var(--color-accent-2-700)">{{ intensityLabel }}</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:22px">
+          <sc-for list="{{ intensitySegments }}" as="seg" hint-placeholder-count="5">
+            <button onClick="{{ seg.onClick }}" style="flex:1;height:10px;border-radius:6px;border:none;background:{{ seg.bg }};cursor:pointer"></button>
+          </sc-for>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--color-text);opacity:0.5;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:9px">Note (optional)</div>
+        <textarea value="{{ draftStress.note }}" onChange="{{ updateStressNote }}" placeholder="What happened?" class="input" style="width:100%;min-height:64px;font-family:var(--font-body);font-size:14.5px;resize:none"></textarea>
+        <button onClick="{{ saveStress }}" style="width:100%;margin-top:16px;padding:15px;border-radius:999px;border:none;background:var(--color-accent-2);color:var(--color-bg);font-family:var(--font-heading);font-size:15.5px;cursor:pointer">Save Stress Event</button>
+      </sc-if>
+
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const STRESS_TAGS = ['Work','Family','Health','Money','Sleep','Traffic','Social','Other'];
+const INTENSITY_LABELS = ['Minimal','Low','Moderate','High','Severe'];
+
+class Component extends DCLogic {
+  state = {
+    screen: 'home',
+    entries: this.buildSeed(),
+    logFilter: 'all',
+    chartRange: 14,
+    sheet: null,
+    draftReading: { systolic: 122, diastolic: 80, pulse: 72 },
+    draftStress: { tag: 'Work', intensity: 3, note: '' },
+    toast: null,
+  };
+
+  idCounter = 1000;
+
+  buildSeed() {
+    const now = new Date();
+    const day = (n, hh, mm) => new Date(now.getFullYear(), now.getMonth(), now.getDate() - n, hh, mm);
+    const spec = [
+      { n: 0, sys: 138, dia: 88, pulse: 78, tag: 'Work', intensity: 4, note: 'Big deadline at work' },
+      { n: 1, sys: 118, dia: 76, pulse: 68 },
+      { n: 2, sys: 124, dia: 80, pulse: 72, tag: 'Family', intensity: 2 },
+      { n: 3, sys: 146, dia: 94, pulse: 82, tag: 'Health', intensity: 5, note: "Doctor's appointment" },
+      { n: 4, sys: 116, dia: 74, pulse: 66 },
+      { n: 5, sys: 128, dia: 82, pulse: 74, tag: 'Money', intensity: 3 },
+      { n: 6, sys: 134, dia: 86, pulse: 77, tag: 'Work', intensity: 4 },
+      { n: 7, sys: 114, dia: 72, pulse: 65 },
+      { n: 8, sys: 122, dia: 78, pulse: 70, tag: 'Traffic', intensity: 2 },
+      { n: 9, sys: 140, dia: 90, pulse: 80, tag: 'Sleep', intensity: 4 },
+      { n: 10, sys: 117, dia: 75, pulse: 67 },
+      { n: 11, sys: 126, dia: 81, pulse: 73, tag: 'Work', intensity: 3 },
+      { n: 12, sys: 119, dia: 77, pulse: 69, tag: 'Family', intensity: 1 },
+      { n: 13, sys: 148, dia: 96, pulse: 84, tag: 'Health', intensity: 5 },
+    ];
+    const entries = [];
+    spec.forEach(s => {
+      entries.push({ id: this.idCounter++, type: 'reading', ts: day(s.n, 8, 15), systolic: s.sys, diastolic: s.dia, pulse: s.pulse, dayOffset: s.n });
+      if (s.tag) entries.push({ id: this.idCounter++, type: 'stress', ts: day(s.n, 17, 30), tag: s.tag, intensity: s.intensity, note: s.note || '', dayOffset: s.n });
+    });
+    return entries.sort((a, b) => b.ts - a.ts);
+  }
+
+  categorize(sys, dia) {
+    if (sys >= 180 || dia >= 120) return { label: 'Crisis', color: 'var(--color-bg)', bg: 'var(--color-accent-900)' };
+    if (sys >= 140 || dia >= 90) return { label: 'High (Stage 2)', color: 'var(--color-accent-800)', bg: 'var(--color-accent-300)' };
+    if (sys >= 130 || dia >= 80) return { label: 'High (Stage 1)', color: 'var(--color-accent-700)', bg: 'var(--color-accent-200)' };
+    if (sys >= 120) return { label: 'Elevated', color: 'var(--color-accent-600)', bg: 'var(--color-accent-100)' };
+    return { label: 'Normal', color: 'var(--color-accent-2-800)', bg: 'var(--color-accent-2-100)' };
+  }
+
+  timeOnly(ts) {
+    return ts.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  }
+
+  relTime(ts) {
+    const now = new Date();
+    const d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const d1 = new Date(ts.getFullYear(), ts.getMonth(), ts.getDate());
+    const diff = Math.round((d0 - d1) / 86400000);
+    if (diff === 0) return `Today, ${this.timeOnly(ts)}`;
+    if (diff === 1) return `Yesterday, ${this.timeOnly(ts)}`;
+    return ts.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+
+  dateLabel(ts) {
+    const now = new Date();
+    const d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const d1 = new Date(ts.getFullYear(), ts.getMonth(), ts.getDate());
+    const diff = Math.round((d0 - d1) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Yesterday';
+    return ts.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+  }
+
+  rowFromEntry(e) {
+    if (e.type === 'reading') {
+      const cat = this.categorize(e.systolic, e.diastolic);
+      return {
+        id: e.id, isReading: true, isStress: false,
+        iconBg: 'var(--color-accent-100)', iconColor: 'var(--color-accent-700)',
+        title: 'Blood Pressure', subtitle: cat.label,
+        valueText: `${e.systolic}/${e.diastolic}`, valueColor: cat.color,
+        time: this.relTime(e.ts),
+      };
+    }
+    return {
+      id: e.id, isReading: false, isStress: true,
+      iconBg: 'var(--color-accent-2-100)', iconColor: 'var(--color-accent-2-700)',
+      title: `${e.tag} Stress`, subtitle: e.note || `Intensity ${e.intensity}/5`,
+      valueText: `${e.intensity}/5`, valueColor: 'var(--color-accent-2-700)',
+      time: this.relTime(e.ts),
+    };
+  }
+
+  goHome = () => this.setState({ screen: 'home' });
+  goLog = () => this.setState({ screen: 'log' });
+  goTrends = () => this.setState({ screen: 'trends' });
+  goSettings = () => this.setState({ screen: 'settings' });
+  setFilter = (f) => this.setState({ logFilter: f });
+  setRange = (r) => this.setState({ chartRange: r });
+
+  openChoose = () => this.setState({ sheet: 'choose' });
+  closeSheet = () => this.setState({ sheet: null });
+  stopClick = (e) => e.stopPropagation();
+  chooseReading = () => this.setState({ sheet: 'reading', draftReading: { systolic: 122, diastolic: 80, pulse: 72 } });
+  chooseStress = () => this.setState({ sheet: 'stress', draftStress: { tag: 'Work', intensity: 3, note: '' } });
+  openStressWithTag = (tag) => this.setState({ sheet: 'stress', draftStress: { tag, intensity: 3, note: '' } });
+
+  stepReading = (field, delta, min, max) => {
+    this.setState(s => ({ draftReading: { ...s.draftReading, [field]: Math.max(min, Math.min(max, s.draftReading[field] + delta)) } }));
+  };
+
+  setStressTag = (tag) => this.setState(s => ({ draftStress: { ...s.draftStress, tag } }));
+  setStressIntensity = (n) => this.setState(s => ({ draftStress: { ...s.draftStress, intensity: n } }));
+  updateStressNote = (e) => this.setState(s => ({ draftStress: { ...s.draftStress, note: e.target.value } }));
+
+  showToast(msg) {
+    clearTimeout(this._toastTimer);
+    this.setState({ toast: msg });
+    this._toastTimer = setTimeout(() => this.setState({ toast: null }), 2200);
+  }
+
+  saveReading = () => {
+    const { systolic, diastolic, pulse } = this.state.draftReading;
+    if (systolic <= diastolic) return;
+    const entry = { id: this.idCounter++, type: 'reading', ts: new Date(), systolic, diastolic, pulse, dayOffset: 0 };
+    this.setState(s => ({ entries: [entry, ...s.entries].sort((a, b) => b.ts - a.ts), sheet: null }));
+    this.showToast('Reading saved');
+  };
+
+  saveStress = () => {
+    const { tag, intensity, note } = this.state.draftStress;
+    const entry = { id: this.idCounter++, type: 'stress', ts: new Date(), tag, intensity, note, dayOffset: 0 };
+    this.setState(s => ({ entries: [entry, ...s.entries].sort((a, b) => b.ts - a.ts), sheet: null }));
+    this.showToast('Stress event logged');
+  };
+
+  buildChart(entries, range) {
+    const now = new Date();
+    const d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const days = [];
+    for (let n = range - 1; n >= 0; n--) days.push(n);
+    const valY = (v) => 100 - ((v - 60) / 100) * 80;
+    const sysPts = [], diaPts = [], dots = [];
+    days.forEach((n, i) => {
+      const x = (i / (days.length - 1)) * 300;
+      const dayReadings = entries.filter(e => e.type === 'reading' && Math.round((d0 - new Date(e.ts.getFullYear(), e.ts.getMonth(), e.ts.getDate())) / 86400000) === n);
+      const dayStress = entries.filter(e => e.type === 'stress' && Math.round((d0 - new Date(e.ts.getFullYear(), e.ts.getMonth(), e.ts.getDate())) / 86400000) === n);
+      if (dayReadings.length) {
+        const r = dayReadings[0];
+        sysPts.push(`${x.toFixed(1)},${valY(r.systolic).toFixed(1)}`);
+        diaPts.push(`${x.toFixed(1)},${valY(r.diastolic).toFixed(1)}`);
+      }
+      const maxIntensity = dayStress.length ? Math.max(...dayStress.map(e => e.intensity)) : 0;
+      dots.push({ x: x.toFixed(1), r: maxIntensity ? 2.5 + maxIntensity * 1.1 : 1.5, op: maxIntensity ? 0.35 + maxIntensity * 0.11 : 0.15 });
+    });
+    const toPath = (pts) => pts.length ? 'M' + pts.join(' L') : '';
+    const startDate = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() - (range - 1));
+    return {
+      sysPath: toPath(sysPts), diaPath: toPath(diaPts), dots,
+      startLabel: startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+    };
+  }
+
+  computeInsight(entries) {
+    const now = new Date();
+    const d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const sysForDay = (n) => {
+      const r = entries.find(e => e.type === 'reading' && Math.round((d0 - new Date(e.ts.getFullYear(), e.ts.getMonth(), e.ts.getDate())) / 86400000) === n);
+      return r ? r.systolic : null;
+    };
+    const stressDays = {};
+    entries.filter(e => e.type === 'stress').forEach(e => {
+      const n = Math.round((d0 - new Date(e.ts.getFullYear(), e.ts.getMonth(), e.ts.getDate())) / 86400000);
+      stressDays[n] = Math.max(stressDays[n] || 0, e.intensity);
+    });
+    const high = [], low = [];
+    for (let n = 0; n < 14; n++) {
+      const sys = sysForDay(n);
+      if (sys == null) continue;
+      const intensity = stressDays[n] || 0;
+      if (intensity >= 4) high.push(sys);
+      else if (intensity <= 1) low.push(sys);
+    }
+    if (!high.length || !low.length) return 'Log a few more days to see how stress relates to your blood pressure.';
+    const avgHigh = Math.round(high.reduce((a, b) => a + b, 0) / high.length);
+    const avgLow = Math.round(low.reduce((a, b) => a + b, 0) / low.length);
+    const delta = avgHigh - avgLow;
+    if (delta <= 0) return "No clear link between stress and your systolic pressure yet — keep logging to track patterns.";
+    return `On high-stress days, your systolic pressure runs about ${delta} mmHg higher (avg ${avgHigh} vs ${avgLow} mmHg on calm days).`;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const entries = s.entries;
+    const latest = entries.find(e => e.type === 'reading');
+    const bpStatus = latest ? this.categorize(latest.systolic, latest.diastolic) : this.categorize(120, 80);
+
+    const activeColor = 'var(--color-accent-700)';
+    const inactiveColor = 'var(--color-neutral-500)';
+
+    const quickTagList = ['Work', 'Family', 'Health', 'Money', 'Sleep', 'Traffic'];
+
+    const filters = [
+      { key: 'all', label: 'All' }, { key: 'reading', label: 'Readings' }, { key: 'stress', label: 'Stress' },
+    ].map(f => ({
+      label: f.label, onClick: () => this.setFilter(f.key),
+      bg: s.logFilter === f.key ? 'var(--color-text)' : 'transparent',
+      color: s.logFilter === f.key ? 'var(--color-bg)' : 'var(--color-text)',
+    }));
+
+    const filteredEntries = entries.filter(e => s.logFilter === 'all' || e.type === s.logFilter);
+    const groupsMap = [];
+    filteredEntries.forEach(e => {
+      const label = this.dateLabel(e.ts);
+      let g = groupsMap.find(x => x.label === label);
+      if (!g) { g = { label, items: [] }; groupsMap.push(g); }
+      g.items.push(this.rowFromEntry(e));
+    });
+
+    const chart = this.buildChart(entries, s.chartRange);
+    const ranges = [7, 14].map(r => ({
+      label: `${r}D`, onClick: () => this.setRange(r),
+      bg: s.chartRange === r ? 'var(--color-accent)' : 'var(--color-surface)',
+      color: s.chartRange === r ? 'var(--color-bg)' : 'var(--color-text)',
+    }));
+
+    const stressTags = STRESS_TAGS.map(tag => {
+      const sel = s.draftStress.tag === tag;
+      return {
+        label: tag, onClick: () => this.setStressTag(tag),
+        bg: sel ? 'var(--color-accent-2-100)' : 'var(--color-surface)',
+        color: sel ? 'var(--color-accent-2-800)' : 'var(--color-text)',
+        border: sel ? 'var(--color-accent-2-700)' : 'var(--color-divider)',
+      };
+    });
+
+    const intensitySegments = [1, 2, 3, 4, 5].map(n => ({
+      onClick: () => this.setStressIntensity(n),
+      bg: n <= s.draftStress.intensity ? 'var(--color-accent-2-600)' : 'var(--color-surface)',
+    }));
+
+    const readingValid = s.draftReading.systolic > s.draftReading.diastolic;
+
+    const settingsGroups = [
+      { label: 'Preferences', items: [
+        { title: 'Daily Reminder', detail: '8:00 AM', chevron: true },
+        { title: 'Units', detail: 'mmHg', chevron: true },
+      ] },
+      { label: 'Data', items: [
+        { title: 'Export Data', detail: '', chevron: true },
+        { title: 'Clear All Entries', detail: '', chevron: false },
+      ] },
+      { label: 'About', items: [
+        { title: 'About This App', detail: '', chevron: true },
+        { title: 'Version', detail: '1.0.0', chevron: false },
+      ] },
+    ];
+
+    return {
+      isHome: s.screen === 'home', isLog: s.screen === 'log', isTrends: s.screen === 'trends', isSettings: s.screen === 'settings',
+      greeting: new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening',
+      todayLabel: new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }),
+      bpStatus,
+      latestReading: latest ? { valueText: `${latest.systolic}/${latest.diastolic}`, pulse: latest.pulse, time: this.relTime(latest.ts) } : { valueText: '--/--', pulse: '--', time: '' },
+      quickTags: quickTagList.map(t => ({ label: t, onClick: () => this.openStressWithTag(t) })),
+      recentEntries: entries.slice(0, 4).map(e => this.rowFromEntry(e)),
+      filters,
+      logGroups: groupsMap,
+      ranges,
+      chart,
+      insightText: this.computeInsight(entries),
+      fabVisible: s.screen !== 'settings',
+      tabColors: {
+        home: s.screen === 'home' ? activeColor : inactiveColor,
+        log: s.screen === 'log' ? activeColor : inactiveColor,
+        trends: s.screen === 'trends' ? activeColor : inactiveColor,
+        settings: s.screen === 'settings' ? activeColor : inactiveColor,
+      },
+      goHome: this.goHome, goLog: this.goLog, goTrends: this.goTrends, goSettings: this.goSettings,
+      toast: s.toast,
+      sheet: s.sheet,
+      isChoose: s.sheet === 'choose', isReadingForm: s.sheet === 'reading', isStressForm: s.sheet === 'stress',
+      openChoose: this.openChoose, closeSheet: this.closeSheet, stopClick: this.stopClick,
+      chooseReading: this.chooseReading, chooseStress: this.chooseStress,
+      readingFields: [
+        { label: 'Systolic', unit: 'mmHg', value: s.draftReading.systolic, dec: () => this.stepReading('systolic', -1, 70, 220), inc: () => this.stepReading('systolic', 1, 70, 220) },
+        { label: 'Diastolic', unit: 'mmHg', value: s.draftReading.diastolic, dec: () => this.stepReading('diastolic', -1, 40, 140), inc: () => this.stepReading('diastolic', 1, 40, 140) },
+        { label: 'Pulse', unit: 'bpm', value: s.draftReading.pulse, dec: () => this.stepReading('pulse', -1, 30, 180), inc: () => this.stepReading('pulse', 1, 30, 180) },
+      ],
+      readingValid: readingValid ? 1 : 0.4,
+      readingWarning: readingValid ? '' : 'Systolic should be higher than diastolic.',
+      saveReading: this.saveReading,
+      stressTags, intensitySegments,
+      intensityLabel: INTENSITY_LABELS[s.draftStress.intensity - 1],
+      draftStress: s.draftStress,
+      updateStressNote: this.updateStressNote,
+      saveStress: this.saveStress,
+      settingsGroups,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
