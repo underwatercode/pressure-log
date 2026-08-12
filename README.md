@@ -2,8 +2,7 @@
 
 A personal blood-pressure companion app — an installable PWA for logging
 daily readings, events, meals, sleep, and water, with trends and a doctor
-export. Built for one person, on his doctor's radar, using an iPhone with no
-App Store account. All data stays on-device (IndexedDB); there's no backend,
+export.All data stays on-device (IndexedDB); there's no backend,
 no accounts, no analytics.
 
 This is not a medical device: it records, reminds, and encourages, and never
